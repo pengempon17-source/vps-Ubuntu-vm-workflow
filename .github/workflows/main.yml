@@ -1,14 +1,66 @@
-name: Ubuntu VPS 6 Hours
-on: workflow_dispatch # Menjalankan secara manual
+name: Debian 11 VM Resize Root 50GB
+on: workflow_dispatch
 
 jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    - name: Install QEMU & Tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y qemu-kvm cloud-image-utils wget
 
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
-      # Sesi akan tetap berjalan hingga 6 jam atau sampai Anda menghentikannya
-      
+    - name: Setup Debian 11 & Resize Image
+      run: |
+        # 1. Ambil Image Debian 11
+        wget -q https://cloud.debian.org/images/cloud/bullseye/latest/debian-11-generic-amd64.qcow2
+        
+        # 2. Perbesar file image ke 50GB
+        qemu-img resize debian-11-generic-amd64.qcow2 80G
+        
+        # 3. Konfigurasi Cloud-Init agar otomatis memperluas partisi (growpart)
+        cat <<EOF > user-data
+        #cloud-config
+        user: debian
+        password: 1
+        chpasswd: { expire: False }
+        ssh_pwauth: True
+        sudo: ['ALL=(ALL) NOPASSWD:ALL']
+        # Instruksi untuk memperbesar partisi otomatis
+        growpart:
+          mode: auto
+          devices: ['/']
+          ignore_growroot_disabled: false
+        EOF
+        
+        cloud-localds seed.img user-data
+
+    - name: Launch VM with Resized Disk
+      run: |
+        sudo qemu-system-x86_64 \
+            -enable-kvm \
+            -m 8G \
+            -smp 3 \
+            -cpu host \
+            -drive file=debian-11-generic-amd64.qcow2,format=qcow2,if=virtio \
+            -drive file=seed.img,format=raw,if=virtio \
+            -netdev user,id=n0,hostfwd=tcp::2222-:22 \
+            -device virtio-net-pci,netdev=n0 \
+            -nographic \
+            -daemonize
+        
+        echo "Menunggu VM booting & resizing (45 detik)..."
+        sleep 45
+
+    - name: Setup & Run Bore Tunnel
+      run: |
+        wget hhttps://github.com/ekzhang/bore/releases/download/v0.6.0/bore-v0.6.0-x86_64-unknown-linux-musl.tar.gz
+        tar -xf bore-v0.6.0-x86_64-unknown-linux-musl.tar.gz
+        
+        echo "------------------------------------------------------"
+        echo "Cek 'remote_port' di bawah untuk login!"
+        echo "Login: ssh -p [PORT] debian@bore.pub (Pass: 1)"
+        echo "------------------------------------------------------"
+        
+        ./bore local 2222 --to bore.pub
+        
