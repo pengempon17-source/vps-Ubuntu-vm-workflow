@@ -46,8 +46,9 @@ jobs:
             -drive file=seed.img,format=raw,if=virtio \
             -netdev user,id=n0,hostfwd=tcp::2222-:22 \
             -device virtio-net-pci,netdev=n0 \
-            -nographic \
-            -daemonize
+            -display none \
+            -vga none \
+            -serial mon:stdio &
         
         echo "Menunggu VM booting & resizing (45 detik)..."
         sleep 45
