@@ -11,5 +11,15 @@ jobs:
     - name: Checkout Source Code
       uses: actions/checkout@v4
 
-    - name: Quick Start Tmate
-      uses: mxschmitt/action-tmate@v3
+    - name: Start Manual Tmate Session
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y tmate
+        tmate -S /tmp/tmate.sock new-session -d
+        tmate -S /tmp/tmate.sock wait tmate-ready
+        echo "=========================================="
+        echo "SALIN PERINTAH SSH DI BAWAH INI:"
+        tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'
+        echo "=========================================="
+        # Tahan session selama 1 jam agar tidak tertutup otomatis
+        sleep 3600
