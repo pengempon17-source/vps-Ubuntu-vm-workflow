@@ -1,25 +1,19 @@
-name: GitHub Actions Terminal VPS
+name: vps
 
 on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
-  terminal-vps:
+  build:
     runs-on: ubuntu-22.04
 
     steps:
-    - name: Checkout Source Code
-      uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-    - name: Start Manual Tmate Session
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y tmate
-        tmate -S /tmp/tmate.sock new-session -d
-        tmate -S /tmp/tmate.sock wait tmate-ready
-        echo "=========================================="
-        echo "SALIN PERINTAH SSH DI BAWAH INI:"
-        tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'
-        echo "=========================================="
-        # Tahan session selama 1 jam agar tidak tertutup otomatis
-        sleep 3600
+      - name: Run sshx Terminal
+        run: curl -sSf https://sshx.io/get | sh -s run
