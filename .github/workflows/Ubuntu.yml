@@ -11,10 +11,5 @@ jobs:
     - name: Checkout Source Code
       uses: actions/checkout@v4
 
-    - name: Install Essential Dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y build-essential bison flex libncurses5-dev libssl-dev libelf-dev bc clang lld llvm gcc-aarch64-linux-gnu binutils-aarch64-linux-gnu zip tmate
-
-    - name: Start SSH Terminal Session
+    - name: Quick Start Tmate
       uses: mxschmitt/action-tmate@v3
