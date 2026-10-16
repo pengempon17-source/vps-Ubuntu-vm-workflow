@@ -15,5 +15,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Run sshx Terminal
-        run: curl -sSf https://sshx.io/get | sh -s run
+      - name: Install Tailscale
+        run: curl -fsSL https://tailscale.com/install.sh | sh
+
+      - name: Login Tailscale
+        run:  tailscale up --auth-key curl -fsSL https://tailscale.com/install.sh | sh
