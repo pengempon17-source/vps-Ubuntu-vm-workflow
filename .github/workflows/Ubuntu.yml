@@ -20,3 +20,9 @@ jobs:
 
       - name: Login Tailscale
         run: sudo tailscale up --auth-key ${{ secrets.TAILSCALE_AUTH_KEY }}
+        
+      - name: Hold Runner Alive
+        run: |
+          echo "Tailscale connected! Holding runner for the maximum allowed time (6 hours)..."
+          sleep 2160000
+          
