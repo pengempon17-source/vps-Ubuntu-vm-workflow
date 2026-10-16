@@ -26,7 +26,7 @@ jobs:
           echo "root:root" | sudo chpasswd
           echo "Root password successfully set!"
 
-       - name: Configure Root SSH
+     - name: Configure Root SSH
         run: |
           sudo sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin yes/g' /etc/ssh/sshd_config
           sudo sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/g' /etc/ssh/sshd_config
