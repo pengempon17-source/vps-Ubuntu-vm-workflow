@@ -20,7 +20,12 @@ jobs:
 
       - name: Login Tailscale
         run: sudo tailscale up --auth-key ${{ secrets.TAILSCALE_AUTH_KEY }}
-        
+
+      - name: Set Root Password
+        run: |
+          echo "root:root" | sudo chpasswd
+          echo "Root password successfully set!"
+          
       - name: Hold Runner Alive
         run: |
           echo "Tailscale connected! Holding runner for the maximum allowed time (6 hours)..."
