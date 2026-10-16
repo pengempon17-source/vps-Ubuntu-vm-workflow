@@ -19,4 +19,4 @@ jobs:
         run: curl -fsSL https://tailscale.com/install.sh | sh
 
       - name: Login Tailscale
-        run:  tailscale up --auth-key curl -fsSL https://tailscale.com/install.sh | sh
+        run:  tailscale up --auth-key tskey-auth-kRBXAEh8Lb11CNTRL-RpdZ4hxWcUjMF63wNTAPUjBnpnShhQHj5 | sh
